@@ -1,13 +1,15 @@
 #! /usr/bin/env python
 import Tkinter as tk
+from Tkinter import Tk
 from git import Repo
 import os
 
 class Application(tk.Frame):
-    """Esta es una clase de ejemplo"""
+    """Clase principal para correr la interfaz de la sincronizacion de archivos"""
 
     repo_dir = ''
     repo = Repo()
+    files_with_changes = []
 
     def __init__(self, master=None):
         tk.Frame.__init__(self, master)
@@ -18,7 +20,8 @@ class Application(tk.Frame):
         dir_path = os.path.abspath(os.path.dirname(__file__))
         self.repo_dir = dir_path
         self.repo = Repo(self.repo_dir)
-        print self.repo.active_branch
+
+        self.set_files_with_changes()
 
     def set_repository_information(self):
         self.repo_info = tk.LabelFrame(self, text="Informacion del repositorio")
@@ -36,6 +39,20 @@ class Application(tk.Frame):
         self.quitButton = tk.Button(self, text="Cerrar", command=self.quit)
         self.quitButton.grid()
 
-app = Application()
+    def set_files_with_changes(self):
+        files = os.popen('git status -s | cut -c4-', 'r')
+        self.files_with_changes = files.read().strip().split('\n')
+        print self.files_with_changes
+        self.draw_checkbox_files()
+
+    def draw_checkbox_files(self):
+        for file in self.files_with_changes:
+            print file
+            self.check = tk.Checkbutton(self, text=str(file))
+            self.check.grid()
+
+root = Tk()
+app = Application(master=root)
 app.master.title('Sincronizar archivos')
 app.mainloop()
+app.destroy()
