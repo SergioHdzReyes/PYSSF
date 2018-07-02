@@ -3,11 +3,15 @@ import Tkinter as tk
 from Tkinter import Tk
 from git import Repo
 import os
+from Directories import Directories
+
+dir_path = os.path.dirname(os.path.realpath(__file__))
+print dir_path
 
 class Application(tk.Frame):
     """Clase principal para correr la interfaz de la sincronizacion de archivos"""
 
-    repo_dir = ''
+    root_dir = ''
     repo = Repo()
     files_with_changes = []
 
@@ -17,11 +21,11 @@ class Application(tk.Frame):
         self.set_repository_information()
         self.createWidgets()
 
-        dir_path = os.path.abspath(os.path.dirname(__file__))
-        self.repo_dir = dir_path
-        self.repo = Repo(self.repo_dir)
+        self.root_dir = dir_path
+        self.repo = Repo(self.root_dir)
 
         self.set_files_with_changes()
+        dir = Directories(self.files_with_changes, self.root_dir)
 
     def set_repository_information(self):
         self.repo_info = tk.LabelFrame(self, text="Informacion del repositorio")
@@ -47,9 +51,9 @@ class Application(tk.Frame):
 
     def draw_checkbox_files(self):
         for file in self.files_with_changes:
-            print file
             self.check = tk.Checkbutton(self, text=str(file))
             self.check.grid()
+
 
 root = Tk()
 app = Application(master=root)
