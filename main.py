@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+# coding=utf-8
 import Tkinter as tk
 from Tkinter import Tk
 from git import Repo
@@ -12,12 +13,20 @@ class Application(tk.Frame):
     """Clase principal para correr la interfaz de la sincronizacion de archivos"""
 
     root_dir = ''
-    repo = Repo()
+    #repo = Repo()
     files_with_changes = []
+    error_exception = ''
 
     def __init__(self, master=None):
         tk.Frame.__init__(self, master)
         self.grid()
+
+        try:
+            self.repo = Repo()
+        except Exception:
+            self.set_not_repository_available()
+            return
+
         self.set_repository_information()
         self.createWidgets()
 
@@ -25,6 +34,7 @@ class Application(tk.Frame):
         self.repo = Repo(self.root_dir)
 
         self.set_files_with_changes()
+
         dir = Directories(self.files_with_changes, self.root_dir)
 
     def set_repository_information(self):
@@ -53,6 +63,16 @@ class Application(tk.Frame):
         for file in self.files_with_changes:
             self.check = tk.Checkbutton(self, text=str(file))
             self.check.grid()
+
+    def set_not_repository_available(self, message='Not repository found'):
+        self.repo_info = tk.LabelFrame(self, text=message)
+        self.repo_info.grid()
+
+        self.left = tk.Label(self.repo_info, text=message)
+        self.left.grid()
+
+        self.quitButton = tk.Button(self, text="Cerrar", command=self.quit)
+        self.quitButton.grid()
 
 
 root = Tk()
