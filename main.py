@@ -13,9 +13,9 @@ class Application(tk.Frame):
     """Clase principal para correr la interfaz de la sincronizacion de archivos"""
 
     root_dir = ''
-    #repo = Repo()
     files_with_changes = []
     error_exception = ''
+    dirs = None
 
     def __init__(self, master=None):
         tk.Frame.__init__(self, master)
@@ -31,11 +31,15 @@ class Application(tk.Frame):
         self.createWidgets()
 
         self.root_dir = dir_path
-        self.repo = Repo(self.root_dir)
 
         self.set_files_with_changes()
 
-        dir = Directories(self.files_with_changes, self.root_dir)
+        self.dirs = Directories(self.files_with_changes, self.root_dir)
+        self.dirs.set_directories_list()
+
+        self.dirs.print_directories_list()
+
+        self.draw_checkbox_files()
 
     def set_repository_information(self):
         self.repo_info = tk.LabelFrame(self, text="Informacion del repositorio")
@@ -56,11 +60,11 @@ class Application(tk.Frame):
     def set_files_with_changes(self):
         files = os.popen('git status -s | cut -c4-', 'r')
         self.files_with_changes = files.read().strip().split('\n')
+        print 'Git status result:'
         print self.files_with_changes
-        self.draw_checkbox_files()
 
     def draw_checkbox_files(self):
-        for file in self.files_with_changes:
+        for file in self.dirs.files_with_changes:
             self.check = tk.Checkbutton(self, text=str(file))
             self.check.grid()
 
